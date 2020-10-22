@@ -1,0 +1,41 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+.center {
+  text-align: center;
+}
+
+.pt {
+  padding-top: 24px;
+}
+
+.sign-in-with-microsoft {
+  padding: 12px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  color: #ffffff;
+  background: #2f2f2f;
+}
+
+.sign-in-with-microsoft img {
+  position: relative;
+  top: 4px;
+  padding-right: 4px;
+}
+
+.discord {
+  background: #2c2f33;
+  padding-top: 48px;
+  border-radius: 4px;
+}
+
+.discord img {
+  width: 200px;
+  height: 68px;
+  position: relative;
+  top: 5px;
+}

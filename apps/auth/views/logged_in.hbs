@@ -1,0 +1,14 @@
+<div class="container">
+  <div class="card">
+    <div class="card-content">
+      <span class="card-title">
+        Logging In...
+      </span>
+    </div>
+  </div>
+</div>
+<script>
+  fetch('/auth/token').then(d => d.json()).then(data => data.token).then(token => {
+    window.opener.postMessage(`loggedin,${token}`, "{{{origin}}}");
+  })
+</script>

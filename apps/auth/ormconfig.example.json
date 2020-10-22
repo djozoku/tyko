@@ -1,0 +1,15 @@
+{
+  "type": "postgres",
+  "host": "localhost",
+  "port": 5432,
+  "username": "tyko",
+  "password": "tyko",
+  "database": "tyko-auth",
+  "entities": ["dist/entities/*.entity.js"],
+  "migrations": ["dist/migrations/*.js"],
+  "migrationsRun": true,
+  "logging": true,
+  "cli": {
+    "migrationsDir": "src/migrations"
+  }
+}
