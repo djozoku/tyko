@@ -48,7 +48,14 @@ export const context: ContextFunction = async (ctx) => {
 
 export type Roles = 'teacher' | 'student';
 
-export const authChecker: AuthChecker<Context, Roles> = ({ context: { user } }, roles) => {
+export const authChecker: AuthChecker<Context, Roles> = (
+  { context: { user, student, teacher } },
+  roles,
+) => {
   if (!user) return false;
-  return roles.length > 0 ? roles.some((role) => role === user.type) : true;
+  if (roles.length > 0) {
+    if (!student && !teacher) return false;
+    return roles.some((role) => role === user.type);
+  }
+  return true;
 };
