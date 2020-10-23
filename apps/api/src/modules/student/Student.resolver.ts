@@ -12,6 +12,7 @@ import {
   ObjectType,
 } from 'type-graphql';
 import { createQueryBuilder } from 'typeorm';
+import { UserInputError } from 'apollo-server-express';
 
 import Group from '../group/Group.entity';
 import Period from '../period/Period.entity';
@@ -74,6 +75,15 @@ export default class StudentResolver {
     const existing = await Student.findOne({ where: { user_id: user?.uid } });
     if (existing) throw new Error(`A student with user ID "${user?.uid}" already exists`);
 
+    const errors: Partial<AddStudent> = {};
+
+    if (student.name === '') errors.name = "Name can't be empty";
+    if (student.group_id === '') errors.group_id = "Description can't be empty";
+
+    if (Object.keys(errors).length > 0) {
+      throw new UserInputError('Invalid arguments', errors);
+    }
+
     return Student.create({
       ...student,
       user_id: parseInt(user?.uid as string, 10),
@@ -92,6 +102,15 @@ export default class StudentResolver {
     if (!student) throw new Error('Student was not be found');
     if (user?.type === 'student' && student.id !== cStudent?.id)
       throw new Error("A student cannot edit other student's data");
+
+    const errors: Partial<EditStudent> = {};
+
+    if (edit.name === '') errors.name = "Name can't be empty";
+    if (edit.group_id === '') errors.name = "Group can't be empty";
+
+    if (Object.keys(errors).length > 0) {
+      throw new UserInputError('Invalid arguments', errors);
+    }
 
     if (edit.name) student.name = edit.name;
     if (edit.group_id) student.group_id = parseInt(edit.group_id, 10);

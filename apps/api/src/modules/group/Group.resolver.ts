@@ -11,6 +11,7 @@ import {
   ObjectType,
 } from 'type-graphql';
 import { createQueryBuilder } from 'typeorm';
+import { UserInputError } from 'apollo-server-express';
 
 import Student from '../student/Student.entity';
 import PaginationArgs from '../../utils/PaginationArgs';
@@ -69,6 +70,14 @@ export default class GroupResolver {
     const existing = await Group.findOne({ where: { name: group.name } });
     if (existing) throw new Error(`Group is already in the database`);
 
+    const errors: Partial<AddGroup> = {};
+
+    if (group.name === '') errors.name = "Name can't be empty";
+
+    if (Object.keys(errors).length > 0) {
+      throw new UserInputError('Invalid arguments', errors);
+    }
+
     return Group.create(group).save();
   }
 
@@ -80,6 +89,14 @@ export default class GroupResolver {
   ): Promise<Group> {
     const group = await Group.findOne(id);
     if (!group) throw new Error(`A group could not be found with ID: "${id}"`);
+
+    const errors: Partial<EditGroup> = {};
+
+    if (edit.name === '') errors.name = "Name can't be empty";
+
+    if (Object.keys(errors).length > 0) {
+      throw new UserInputError('Invalid arguments', errors);
+    }
 
     if (edit.name) group.name = edit.name;
 

@@ -11,6 +11,7 @@ import {
   ObjectType,
 } from 'type-graphql';
 import { createQueryBuilder } from 'typeorm';
+import { UserInputError } from 'apollo-server-express';
 
 import Workplace from '../workplace/Workplace.entity';
 import PaginationArgs from '../../utils/PaginationArgs';
@@ -71,6 +72,16 @@ export default class SupervisorResolver {
     });
     if (existing) throw new Error(`Supervisor is already in the database`);
 
+    const errors: Partial<AddSupervisor> = {};
+
+    if (supervisor.name === '') errors.name = "Name can't be empty";
+    if (supervisor.phone === '') errors.phone = "Phone number can't be empty";
+    if (supervisor.email === '') errors.email = "Email can't be empty";
+
+    if (Object.keys(errors).length > 0) {
+      throw new UserInputError('Invalid arguments', errors);
+    }
+
     return Supervisor.create({
       ...supervisor,
       workplace_id: parseInt(supervisor.workplace_id, 10),
@@ -85,6 +96,16 @@ export default class SupervisorResolver {
   ): Promise<Supervisor> {
     const supervisor = await Supervisor.findOne(id);
     if (!supervisor) throw new Error(`A supervisor could not be found with ID: "${id}"`);
+
+    const errors: Partial<EditSupervisor> = {};
+
+    if (edit.name === '') errors.name = "Name can't be empty";
+    if (edit.phone === '') errors.phone = "Phone number can't be empty";
+    if (edit.email === '') errors.email = "Email can't be empty";
+
+    if (Object.keys(errors).length > 0) {
+      throw new UserInputError('Invalid arguments', errors);
+    }
 
     if (edit.name) supervisor.name = edit.name;
     if (edit.phone) supervisor.phone = edit.phone;

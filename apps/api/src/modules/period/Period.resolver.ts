@@ -1,4 +1,5 @@
 import { Resolver, Mutation, Arg, ID, FieldResolver, Root, Authorized, Ctx } from 'type-graphql';
+import { UserInputError } from 'apollo-server-express';
 
 import Student from '../student/Student.entity';
 import Workplace from '../workplace/Workplace.entity';
@@ -28,6 +29,16 @@ export default class PeriodResolver {
     });
     if (existing) throw new Error(`Period is already in the database`);
 
+    const errors: Partial<{ [key in keyof AddPeriod]: string }> = {};
+
+    if (period.workplace_id === '') errors.workplace_id = "Workplace can't be empty";
+    if (period.teacher_id === '') errors.teacher_id = "Teacher can't be empty";
+    if (period.supervisor_id === '') errors.supervisor_id = "Supervisor can't be empty";
+
+    if (Object.keys(errors).length > 0) {
+      throw new UserInputError('Invalid arguments', errors);
+    }
+
     return Period.create({
       ...period,
       student_id: parseInt(id, 10),
@@ -48,6 +59,16 @@ export default class PeriodResolver {
     if (!period) throw new Error(`A period could not be found with ID: "${id}"`);
     if (user?.type === 'student' && period.student_id !== student?.id)
       throw new Error("A student cannot edit other student's data");
+
+    const errors: Partial<{ [key in keyof EditPeriod]: string }> = {};
+
+    if (edit.workplace_id === '') errors.workplace_id = "Workplace can't be empty";
+    if (edit.teacher_id === '') errors.teacher_id = "Teacher can't be empty";
+    if (edit.supervisor_id === '') errors.supervisor_id = "Supervisor can't be empty";
+
+    if (Object.keys(errors).length > 0) {
+      throw new UserInputError('Invalid arguments', errors);
+    }
 
     if (edit.start_date) period.start_date = edit.start_date;
     if (edit.end_date) period.end_date = edit.end_date;

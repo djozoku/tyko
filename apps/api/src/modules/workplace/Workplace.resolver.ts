@@ -11,6 +11,7 @@ import {
   ObjectType,
 } from 'type-graphql';
 import { createQueryBuilder } from 'typeorm';
+import { UserInputError } from 'apollo-server-express';
 
 import AddAddress from '../address/AddAddress.input';
 import Address from '../address/Address.entity';
@@ -72,6 +73,20 @@ export default class WorkplaceResolver {
     const existing = await Workplace.findOne({ where: { name: workplace.name } });
     if (existing) throw new Error(`Workplace is already in the database`);
 
+    const errors: Partial<AddWorkplace & AddAddress> = {};
+
+    if (workplace.name === '') errors.name = "Name can't be empty";
+    if (workplace.description === '') errors.description = "Description can't be empty";
+    if (workplace.email === '') errors.email = "Email can't be empty";
+    if (workplace.phone === '') errors.phone = "Phone number can't be empty";
+    if (address.city === '') errors.city = "City can't be empty";
+    if (address.postal_code === '') errors.postal_code = "Postal code can't be empty";
+    if (address.street === '') errors.street = "Street address can't be empty";
+
+    if (Object.keys(errors).length > 0) {
+      throw new UserInputError('Invalid arguments', errors);
+    }
+
     const { id } = await Address.create(address).save();
 
     return Workplace.create({
@@ -88,6 +103,17 @@ export default class WorkplaceResolver {
   ): Promise<Workplace> {
     const workplace = await Workplace.findOne(id);
     if (!workplace) throw new Error(`A workplace could not be found with ID: "${id}"`);
+
+    const errors: Partial<EditWorkplace> = {};
+
+    if (edit.name === '') errors.name = "Name can't be empty";
+    if (edit.description === '') errors.description = "Description can't be empty";
+    if (edit.email === '') errors.email = "Email can't be empty";
+    if (edit.phone === '') errors.phone = "Phone number can't be empty";
+
+    if (Object.keys(errors).length > 0) {
+      throw new UserInputError('Invalid arguments', errors);
+    }
 
     if (edit.name) workplace.name = edit.name;
     if (edit.description) workplace.description = edit.description;

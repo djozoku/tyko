@@ -12,6 +12,7 @@ import {
   ObjectType,
 } from 'type-graphql';
 import { createQueryBuilder } from 'typeorm';
+import { UserInputError } from 'apollo-server-express';
 
 import Period from '../period/Period.entity';
 import PaginationArgs from '../../utils/PaginationArgs';
@@ -73,6 +74,16 @@ export default class TeacherResolver {
     const existing = await Teacher.findOne({ where: { user_id: user?.uid } });
     if (existing) throw new Error(`A teacher with user ID "${user?.uid}" already exists`);
 
+    const errors: Partial<AddTeacher> = {};
+
+    if (teacher.name === '') errors.name = "Name can't be empty";
+    if (teacher.phone === '') errors.phone = "Phone number can't be empty";
+    if (teacher.email === '') errors.email = "Email can't be empty";
+
+    if (Object.keys(errors).length > 0) {
+      throw new UserInputError('Invalid arguments', errors);
+    }
+
     return Teacher.create({
       ...teacher,
       user_id: parseInt(user?.uid as string, 10),
@@ -85,7 +96,17 @@ export default class TeacherResolver {
     @Arg('edit', { description: 'Edited data' }) edit: EditTeacher,
     @Ctx() { teacher }: Context,
   ): Promise<Teacher> {
+    const errors: Partial<EditTeacher> = {};
+
     if (!teacher) throw new Error(`Teacher was not be found`);
+
+    if (edit.name === '') errors.name = "Name can't be empty";
+    if (edit.phone === '') errors.phone = "Phone number can't be empty";
+    if (edit.email === '') errors.email = "Email can't be empty";
+
+    if (Object.keys(errors).length > 0) {
+      throw new UserInputError('Invalid arguments', errors);
+    }
 
     if (edit.name) teacher.name = edit.name;
     if (edit.phone) teacher.phone = edit.phone;
