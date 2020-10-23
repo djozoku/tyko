@@ -9,6 +9,7 @@ import {
   Authorized,
   Args,
   Ctx,
+  ObjectType,
 } from 'type-graphql';
 import { createQueryBuilder } from 'typeorm';
 
@@ -16,10 +17,14 @@ import Group from '../group/Group.entity';
 import Period from '../period/Period.entity';
 import PaginationArgs from '../../utils/PaginationArgs';
 import { Context } from '../../utils/GraphQLContext';
+import PaginatedResponse from '../../utils/PaginatedResponse';
 
 import Student from './Student.entity';
 import EditStudent from './EditStudent.input';
 import AddStudent from './AddStudent.input';
+
+@ObjectType()
+class PaginatedStudentResponse extends PaginatedResponse(Student) {}
 
 @Resolver(Student)
 export default class StudentResolver {
@@ -32,21 +37,31 @@ export default class StudentResolver {
   }
 
   @Authorized()
-  @Query(() => [Student], { description: 'Gets all students' })
+  @Query(() => PaginatedStudentResponse, { description: 'Gets all students' })
   async students(
     @Args() { skip, take }: PaginationArgs,
     @Arg('search', () => String, { nullable: true }) search: string,
-  ): Promise<Student[]> {
+  ): Promise<PaginatedStudentResponse> {
     if (search) {
-      return createQueryBuilder(Student)
+      const [items, count] = await createQueryBuilder(Student)
         .select()
         .where('name_search_doc @@ to_tsquery(:query)', { query: `${search}:*` })
         .orderBy('ts_rank(name_search_doc, to_tsquery(:query))', 'DESC')
         .skip(skip)
         .take(take)
-        .getMany();
+        .getManyAndCount();
+      return {
+        items,
+        total: count,
+        hasMore: count - skip - take > 0,
+      };
     }
-    return Student.find({ skip, take });
+    const [items, count] = await Student.findAndCount({ skip, take });
+    return {
+      items,
+      total: count,
+      hasMore: count - skip - take > 0,
+    };
   }
 
   @Authorized()

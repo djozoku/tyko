@@ -9,16 +9,21 @@ import {
   Authorized,
   Args,
   Ctx,
+  ObjectType,
 } from 'type-graphql';
 import { createQueryBuilder } from 'typeorm';
 
 import Period from '../period/Period.entity';
 import PaginationArgs from '../../utils/PaginationArgs';
 import { Context } from '../../utils/GraphQLContext';
+import PaginatedResponse from '../../utils/PaginatedResponse';
 
 import Teacher from './Teacher.entity';
 import EditTeacher from './EditTeacher.input';
 import AddTeacher from './AddTeacher.input';
+
+@ObjectType()
+class PaginatedTeacherResponse extends PaginatedResponse(Teacher) {}
 
 @Resolver(Teacher)
 export default class TeacherResolver {
@@ -31,23 +36,31 @@ export default class TeacherResolver {
   }
 
   @Authorized()
-  @Query(() => [Teacher], { description: 'Gets all teachers' })
+  @Query(() => PaginatedTeacherResponse, { description: 'Gets all teachers' })
   async teachers(
     @Args() { skip, take }: PaginationArgs,
     @Arg('search', () => String, { nullable: true }) search: string,
-  ): Promise<Teacher[]> {
+  ): Promise<PaginatedTeacherResponse> {
     if (search) {
-      return (
-        createQueryBuilder(Teacher)
-          .select()
-          .where('name_search_doc @@ to_tsquery(:query)', { query: `${search}:*` })
-          //.orderBy('ts_rank(name_search_doc, plainto_tsquery(:query)', 'DESC')
-          .skip(skip)
-          .take(take)
-          .getMany()
-      );
+      const [items, count] = await createQueryBuilder(Teacher)
+        .select()
+        .where('name_search_doc @@ to_tsquery(:query)', { query: `${search}:*` })
+        .orderBy('ts_rank(name_search_doc, to_tsquery(:query))', 'DESC')
+        .skip(skip)
+        .take(take)
+        .getManyAndCount();
+      return {
+        items,
+        total: count,
+        hasMore: count - skip - take > 0,
+      };
     }
-    return Teacher.find({ skip, take });
+    const [items, count] = await Teacher.findAndCount({ skip, take });
+    return {
+      items,
+      total: count,
+      hasMore: count - skip - take > 0,
+    };
   }
 
   @Authorized()

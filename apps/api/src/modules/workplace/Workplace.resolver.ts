@@ -8,6 +8,7 @@ import {
   Root,
   Authorized,
   Args,
+  ObjectType,
 } from 'type-graphql';
 import { createQueryBuilder } from 'typeorm';
 
@@ -15,10 +16,14 @@ import AddAddress from '../address/AddAddress.input';
 import Address from '../address/Address.entity';
 import PaginationArgs from '../../utils/PaginationArgs';
 import Supervisor from '../supervisor/Supervisor.entity';
+import PaginatedResponse from '../../utils/PaginatedResponse';
 
 import Workplace from './Workplace.entity';
 import AddWorkplace from './AddWorkplace.input';
 import EditWorkplace from './EditWorkplace.input';
+
+@ObjectType()
+class PaginatedWorkplaceResponse extends PaginatedResponse(Workplace) {}
 
 @Resolver(Workplace)
 export default class WorkplaceResolver {
@@ -31,21 +36,31 @@ export default class WorkplaceResolver {
   }
 
   @Authorized()
-  @Query(() => [Workplace], { description: 'Gets all workplaces' })
+  @Query(() => PaginatedWorkplaceResponse, { description: 'Gets all workplaces' })
   async workplaces(
     @Args() { skip, take }: PaginationArgs,
     @Arg('search', () => String, { nullable: true }) search: string,
-  ): Promise<Workplace[]> {
+  ): Promise<PaginatedWorkplaceResponse> {
     if (search) {
-      return createQueryBuilder(Workplace)
+      const [items, count] = await createQueryBuilder(Workplace)
         .select()
         .where('name_search_doc @@ to_tsquery(:query)', { query: `${search}:*` })
         .orderBy('ts_rank(name_search_doc, to_tsquery(:query))', 'DESC')
         .skip(skip)
         .take(take)
-        .getMany();
+        .getManyAndCount();
+      return {
+        items,
+        total: count,
+        hasMore: count - skip - take > 0,
+      };
     }
-    return Workplace.find({ skip, take });
+    const [items, count] = await Workplace.findAndCount({ skip, take });
+    return {
+      items,
+      total: count,
+      hasMore: count - skip - take > 0,
+    };
   }
 
   @Authorized('teacher', 'student')

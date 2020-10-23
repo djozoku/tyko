@@ -8,15 +8,20 @@ import {
   Root,
   Authorized,
   Args,
+  ObjectType,
 } from 'type-graphql';
 import { createQueryBuilder } from 'typeorm';
 
 import Workplace from '../workplace/Workplace.entity';
 import PaginationArgs from '../../utils/PaginationArgs';
+import PaginatedResponse from '../../utils/PaginatedResponse';
 
 import Supervisor from './Supervisor.entity';
 import AddSupervisor from './AddSupervisor.input';
 import EditSupervisor from './EditSupervisor.input';
+
+@ObjectType()
+class PaginatedSupervisorResponse extends PaginatedResponse(Supervisor) {}
 
 @Resolver(Supervisor)
 export default class SupervisorResolver {
@@ -29,21 +34,31 @@ export default class SupervisorResolver {
   }
 
   @Authorized()
-  @Query(() => [Supervisor], { description: 'Gets all supervisors' })
+  @Query(() => PaginatedSupervisorResponse, { description: 'Gets all supervisors' })
   async supervisors(
     @Args() { skip, take }: PaginationArgs,
     @Arg('search', () => String, { nullable: true }) search: string,
-  ): Promise<Supervisor[]> {
+  ): Promise<PaginatedSupervisorResponse> {
     if (search) {
-      return createQueryBuilder(Supervisor)
+      const [items, count] = await createQueryBuilder(Supervisor)
         .select()
         .where('name_search_doc @@ to_tsquery(:query)', { query: `${search}:*` })
         .orderBy('ts_rank(name_search_doc, to_tsquery(:query))', 'DESC')
         .skip(skip)
         .take(take)
-        .getMany();
+        .getManyAndCount();
+      return {
+        items,
+        total: count,
+        hasMore: count - skip - take > 0,
+      };
     }
-    return Supervisor.find({ skip, take });
+    const [items, count] = await Supervisor.findAndCount({ skip, take });
+    return {
+      items,
+      total: count,
+      hasMore: count - skip - take > 0,
+    };
   }
 
   @Authorized('teacher', 'student')

@@ -8,15 +8,20 @@ import {
   Root,
   Authorized,
   Args,
+  ObjectType,
 } from 'type-graphql';
 import { createQueryBuilder } from 'typeorm';
 
 import Student from '../student/Student.entity';
 import PaginationArgs from '../../utils/PaginationArgs';
+import PaginatedResponse from '../../utils/PaginatedResponse';
 
 import Group from './Group.entity';
 import AddGroup from './AddGroup.input';
 import EditGroup from './EditGroup.input';
+
+@ObjectType()
+class PaginatedGroupResponse extends PaginatedResponse(Group) {}
 
 @Resolver(Group)
 export default class GroupResolver {
@@ -29,21 +34,31 @@ export default class GroupResolver {
   }
 
   @Authorized()
-  @Query(() => [Group], { description: 'Gets all groups' })
+  @Query(() => PaginatedGroupResponse, { description: 'Gets all groups' })
   async groups(
     @Args() { skip, take }: PaginationArgs,
     @Arg('search', () => String, { nullable: true }) search: string,
-  ): Promise<Group[]> {
+  ): Promise<PaginatedGroupResponse> {
     if (search) {
-      return createQueryBuilder(Group)
+      const [items, count] = await createQueryBuilder(Group)
         .select()
         .where('name_search_doc @@ to_tsquery(:query)', { query: `${search}:*` })
         .orderBy('ts_rank(name_search_doc, to_tsquery(:query))', 'DESC')
         .skip(skip)
         .take(take)
-        .getMany();
+        .getManyAndCount();
+      return {
+        items,
+        total: count,
+        hasMore: count - skip - take > 0,
+      };
     }
-    return Group.find({ skip, take });
+    const [items, count] = await Group.findAndCount({ skip, take });
+    return {
+      items,
+      total: count,
+      hasMore: count - skip - take > 0,
+    };
   }
 
   @Authorized('teacher')
