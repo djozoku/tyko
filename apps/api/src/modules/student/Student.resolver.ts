@@ -11,7 +11,7 @@ import {
   Ctx,
   ObjectType,
 } from 'type-graphql';
-import { createQueryBuilder } from 'typeorm';
+import { createQueryBuilder, In } from 'typeorm';
 import { UserInputError } from 'apollo-server-express';
 
 import Group from '../group/Group.entity';
@@ -58,6 +58,28 @@ export default class StudentResolver {
       };
     }
     const [items, count] = await Student.findAndCount({ skip, take });
+    return {
+      items,
+      total: count,
+      hasMore: count - skip - take > 0,
+    };
+  }
+
+  @Authorized()
+  @Query(() => PaginatedStudentResponse, {
+    description: 'Gets students with current or future workplace ID',
+  })
+  async studentsByWorkplace(
+    @Args() { skip, take }: PaginationArgs,
+    @Arg('id', () => ID, { description: 'Workplace ID to get students from' }) id: string,
+  ): Promise<PaginatedStudentResponse> {
+    const periods = await Period.find({ where: { workplace_id: id } });
+    const filtered = periods.filter((period) => period.end_date.getTime() > Date.now());
+    const [items, count] = await Student.findAndCount({
+      skip,
+      take,
+      where: { id: In(filtered.map((p) => p.student_id)) },
+    });
     return {
       items,
       total: count,
