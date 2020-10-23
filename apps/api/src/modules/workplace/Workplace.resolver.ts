@@ -18,6 +18,7 @@ import Address from '../address/Address.entity';
 import PaginationArgs from '../../utils/PaginationArgs';
 import Supervisor from '../supervisor/Supervisor.entity';
 import PaginatedResponse from '../../utils/PaginatedResponse';
+import Period from '../period/Period.entity';
 
 import Workplace from './Workplace.entity';
 import AddWorkplace from './AddWorkplace.input';
@@ -149,5 +150,10 @@ export default class WorkplaceResolver {
   @FieldResolver(() => [Supervisor])
   async supervisors(@Root() parent: Workplace): Promise<Supervisor[]> {
     return Supervisor.find({ where: { workplace_id: parent.id } });
+  }
+
+  @FieldResolver(() => [Period])
+  async periods(@Root() parent: Workplace): Promise<Period[]> {
+    return Period.find({ where: { workplace_id: parent.id } });
   }
 }
