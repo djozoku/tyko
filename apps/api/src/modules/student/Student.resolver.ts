@@ -99,8 +99,8 @@ export default class StudentResolver {
 
     const errors: Partial<AddStudent> = {};
 
-    if (student.name === '') errors.name = "Name can't be empty";
-    if (student.group_id === '') errors.group_id = "Description can't be empty";
+    if (student.name.trim() === '') errors.name = "Name can't be empty";
+    if (student.group_id.trim() === '') errors.group_id = "Description can't be empty";
 
     if (Object.keys(errors).length > 0) {
       throw new UserInputError('Invalid arguments', errors);
@@ -127,8 +127,8 @@ export default class StudentResolver {
 
     const errors: Partial<EditStudent> = {};
 
-    if (edit.name === '') errors.name = "Name can't be empty";
-    if (edit.group_id === '') errors.name = "Group can't be empty";
+    if (edit.name?.trim() === '') errors.name = "Name can't be empty";
+    if (edit.group_id?.trim() === '') errors.name = "Group can't be empty";
 
     if (Object.keys(errors).length > 0) {
       throw new UserInputError('Invalid arguments', errors);

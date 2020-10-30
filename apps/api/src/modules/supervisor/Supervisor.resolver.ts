@@ -74,9 +74,9 @@ export default class SupervisorResolver {
 
     const errors: Partial<AddSupervisor> = {};
 
-    if (supervisor.name === '') errors.name = "Name can't be empty";
-    if (supervisor.phone === '') errors.phone = "Phone number can't be empty";
-    if (supervisor.email === '') errors.email = "Email can't be empty";
+    if (supervisor.name.trim() === '') errors.name = "Name can't be empty";
+    if (supervisor.phone.trim() === '') errors.phone = "Phone number can't be empty";
+    if (supervisor.email.trim() === '') errors.email = "Email can't be empty";
 
     if (Object.keys(errors).length > 0) {
       throw new UserInputError('Invalid arguments', errors);

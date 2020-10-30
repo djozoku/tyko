@@ -72,7 +72,7 @@ export default class GroupResolver {
 
     const errors: Partial<AddGroup> = {};
 
-    if (group.name === '') errors.name = "Name can't be empty";
+    if (group.name.trim() === '') errors.name = "Name can't be empty";
 
     if (Object.keys(errors).length > 0) {
       throw new UserInputError('Invalid arguments', errors);
@@ -92,7 +92,7 @@ export default class GroupResolver {
 
     const errors: Partial<EditGroup> = {};
 
-    if (edit.name === '') errors.name = "Name can't be empty";
+    if (edit.name?.trim() === '') errors.name = "Name can't be empty";
 
     if (Object.keys(errors).length > 0) {
       throw new UserInputError('Invalid arguments', errors);

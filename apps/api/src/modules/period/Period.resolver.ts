@@ -31,9 +31,9 @@ export default class PeriodResolver {
 
     const errors: Partial<{ [key in keyof AddPeriod]: string }> = {};
 
-    if (period.workplace_id === '') errors.workplace_id = "Workplace can't be empty";
-    if (period.teacher_id === '') errors.teacher_id = "Teacher can't be empty";
-    if (period.supervisor_id === '') errors.supervisor_id = "Supervisor can't be empty";
+    if (period.workplace_id.trim() === '') errors.workplace_id = "Workplace can't be empty";
+    if (period.teacher_id.trim() === '') errors.teacher_id = "Teacher can't be empty";
+    if (period.supervisor_id.trim() === '') errors.supervisor_id = "Supervisor can't be empty";
 
     if (Object.keys(errors).length > 0) {
       throw new UserInputError('Invalid arguments', errors);

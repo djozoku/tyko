@@ -17,9 +17,9 @@ export default class AddressResolver {
 
     const errors: Partial<EditAddress> = {};
 
-    if (edit.city === '') errors.city = "City can't be empty";
-    if (edit.postal_code === '') errors.postal_code = "Postal code can't be empty";
-    if (edit.street === '') errors.street = "Street address can't be empty";
+    if (edit.city?.trim() === '') errors.city = "City can't be empty";
+    if (edit.postal_code?.trim() === '') errors.postal_code = "Postal code can't be empty";
+    if (edit.street?.trim() === '') errors.street = "Street address can't be empty";
 
     if (Object.keys(errors).length > 0) {
       throw new UserInputError('Invalid arguments', errors);

@@ -76,9 +76,9 @@ export default class TeacherResolver {
 
     const errors: Partial<AddTeacher> = {};
 
-    if (teacher.name === '') errors.name = "Name can't be empty";
-    if (teacher.phone === '') errors.phone = "Phone number can't be empty";
-    if (teacher.email === '') errors.email = "Email can't be empty";
+    if (teacher.name.trim() === '') errors.name = "Name can't be empty";
+    if (teacher.phone.trim() === '') errors.phone = "Phone number can't be empty";
+    if (teacher.email.trim() === '') errors.email = "Email can't be empty";
 
     if (Object.keys(errors).length > 0) {
       throw new UserInputError('Invalid arguments', errors);
@@ -100,9 +100,9 @@ export default class TeacherResolver {
 
     if (!teacher) throw new Error(`Teacher was not be found`);
 
-    if (edit.name === '') errors.name = "Name can't be empty";
-    if (edit.phone === '') errors.phone = "Phone number can't be empty";
-    if (edit.email === '') errors.email = "Email can't be empty";
+    if (edit.name?.trim() === '') errors.name = "Name can't be empty";
+    if (edit.phone?.trim() === '') errors.phone = "Phone number can't be empty";
+    if (edit.email?.trim() === '') errors.email = "Email can't be empty";
 
     if (Object.keys(errors).length > 0) {
       throw new UserInputError('Invalid arguments', errors);

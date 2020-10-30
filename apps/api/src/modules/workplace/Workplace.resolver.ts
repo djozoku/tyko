@@ -76,13 +76,11 @@ export default class WorkplaceResolver {
 
     const errors: Partial<AddWorkplace & AddAddress> = {};
 
-    if (workplace.name === '') errors.name = "Name can't be empty";
-    if (workplace.description === '') errors.description = "Description can't be empty";
-    if (workplace.email === '') errors.email = "Email can't be empty";
-    if (workplace.phone === '') errors.phone = "Phone number can't be empty";
-    if (address.city === '') errors.city = "City can't be empty";
-    if (address.postal_code === '') errors.postal_code = "Postal code can't be empty";
-    if (address.street === '') errors.street = "Street address can't be empty";
+    if (workplace.name.trim() === '') errors.name = "Name can't be empty";
+    if (workplace.description.trim() === '') errors.description = "Description can't be empty";
+    if (address.city.trim() === '') errors.city = "City can't be empty";
+    if (address.postal_code.trim() === '') errors.postal_code = "Postal code can't be empty";
+    if (address.street.trim() === '') errors.street = "Street address can't be empty";
 
     if (Object.keys(errors).length > 0) {
       throw new UserInputError('Invalid arguments', errors);
@@ -107,10 +105,8 @@ export default class WorkplaceResolver {
 
     const errors: Partial<EditWorkplace> = {};
 
-    if (edit.name === '') errors.name = "Name can't be empty";
-    if (edit.description === '') errors.description = "Description can't be empty";
-    if (edit.email === '') errors.email = "Email can't be empty";
-    if (edit.phone === '') errors.phone = "Phone number can't be empty";
+    if (edit.name?.trim() === '') errors.name = "Name can't be empty";
+    if (edit.description?.trim() === '') errors.description = "Description can't be empty";
 
     if (Object.keys(errors).length > 0) {
       throw new UserInputError('Invalid arguments', errors);
