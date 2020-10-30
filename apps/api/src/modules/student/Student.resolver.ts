@@ -75,6 +75,13 @@ export default class StudentResolver {
   ): Promise<PaginatedStudentResponse> {
     const periods = await Period.find({ where: { workplace_id: id } });
     const filtered = periods.filter((period) => period.end_date.getTime() > Date.now());
+    if (filtered.length === 0) {
+      return {
+        items: [],
+        total: 0,
+        hasMore: false,
+      };
+    }
     const [items, count] = await Student.findAndCount({
       skip,
       take,
