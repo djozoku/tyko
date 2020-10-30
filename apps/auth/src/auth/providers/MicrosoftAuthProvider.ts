@@ -12,7 +12,7 @@ import Connection from '../../entities/Connection.entity';
 
 interface MicrosoftUserDetails {
   id: string;
-  displayName: string;
+  displayName?: string;
   mail?: string;
   userPrincipalName: string;
 }
@@ -83,7 +83,7 @@ export default class MicrosoftAuthProvider extends BaseAuthProvider {
             const account = await this.createAccount({
               provider: this.name,
               provider_id: user.id,
-              name: user.displayName,
+              name: user.displayName ?? '',
               email: user.mail || user.userPrincipalName,
               token: JSON.stringify(oauthToken.token),
               avatar: '',
@@ -117,7 +117,7 @@ export default class MicrosoftAuthProvider extends BaseAuthProvider {
             await this.createConnection({
               provider: this.name,
               provider_id: user.id,
-              name: user.displayName,
+              name: user.displayName ?? '',
               email: user.mail || user.userPrincipalName,
               token: JSON.stringify(oauthToken.token),
               avatar: '',
