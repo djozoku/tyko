@@ -68,7 +68,7 @@ export default class SupervisorResolver {
     @Arg('supervisor', { description: "New supervisor's data" }) supervisor: AddSupervisor,
   ): Promise<Supervisor> {
     const existing = await Supervisor.findOne({
-      where: { name: supervisor.name, workplace_id: supervisor.workplace_id },
+      where: { name: supervisor.name, workplace_id: parseInt(supervisor.workplace_id, 10) },
     });
     if (existing) throw new Error(`Supervisor is already in the database`);
 
