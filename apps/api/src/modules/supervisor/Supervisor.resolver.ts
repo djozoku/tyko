@@ -110,7 +110,6 @@ export default class SupervisorResolver {
     if (edit.name) supervisor.name = edit.name;
     if (edit.phone) supervisor.phone = edit.phone;
     if (edit.email) supervisor.email = edit.email;
-    if (edit.workplace_id) supervisor.workplace_id = parseInt(edit.workplace_id, 10);
 
     return supervisor.save();
   }

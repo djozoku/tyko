@@ -7,4 +7,4 @@ export interface ISupervisor {
 }
 
 export type IAddSupervisor = Omit<ISupervisor, 'id' | 'workplace_id'> & { workplace_id: string };
-export type IEditSupervisor = Partial<IAddSupervisor>;
+export type IEditSupervisor = Partial<Omit<IAddSupervisor, 'workplace_id'>>;

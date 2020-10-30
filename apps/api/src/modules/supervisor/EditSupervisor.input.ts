@@ -12,7 +12,4 @@ export default class EditSupervisor implements IEditSupervisor {
 
   @Field()
   email?: string;
-
-  @Field()
-  workplace_id?: string;
 }
