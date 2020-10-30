@@ -10,6 +10,7 @@ declare namespace NodeJS {
     MICROSOFT_APP_ID?: string;
     MICROSOFT_APP_SECRET?: string;
     MICROSOFT_AUTHORITY?: string;
+    MICROSOFT_DOMAIN_HINT?: string;
     DISCORD_AUTH_ENABLE?: string;
     DISCORD_APP_ID?: string;
     DISCORD_APP_SECRET?: string;

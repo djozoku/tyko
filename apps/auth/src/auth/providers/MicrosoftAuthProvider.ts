@@ -174,7 +174,8 @@ export default class MicrosoftAuthProvider extends BaseAuthProvider {
       passport.authenticate('azuread-openidconnect', {
         prompt: 'login',
         failureRedirect: '/auth/cancel',
-      })(req, res, next);
+        domain_hint: process.env.MICROSOFT_DOMAIN_HINT,
+      } as any)(req, res, next);
     });
 
     this.router.post('/callback', (req, res, next) => {
