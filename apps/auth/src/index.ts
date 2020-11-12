@@ -59,7 +59,9 @@ const bootstrap = async () => {
     store = new session.MemoryStore();
   } else {
     const RedisStore = connectRedis(session);
-    const redisClient = redis.createClient();
+    const redisClient = redis.createClient(
+      process.env.REDIS_HOST ? { host: process.env.REDIS_HOST } : {},
+    );
     store = new RedisStore({ client: redisClient });
   }
 

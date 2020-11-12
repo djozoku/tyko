@@ -14,5 +14,6 @@ declare namespace NodeJS {
     DISCORD_AUTH_ENABLE?: string;
     DISCORD_APP_ID?: string;
     DISCORD_APP_SECRET?: string;
+    REDIS_HOST?: string;
   }
 }
