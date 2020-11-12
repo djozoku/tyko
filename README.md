@@ -12,15 +12,15 @@ Software for managing data on student workplace training. Currently only in finn
 
 ## Tooling
 
-| Name:       | Description:                                     |
-| ----------- | ------------------------------------------------ |
-| Typescript  | Superset of Javascript with typings added on top |
-| Yarn        | Package Manager                                  |
-| ESLint      | Javascript Linter                                |
-| Prettier    | Code Formatter                                   |
-| Commitlint  | Commit message linter                            |
-| Husky       | Git Hooks                                        |
-| lint-staged | Lint staged files                                |
+| Name:       | Description:                            |
+| ----------- | --------------------------------------- |
+| Typescript  | Statically Typed Superset of Javascript |
+| Yarn        | Package Manager                         |
+| ESLint      | Javascript Linter                       |
+| Prettier    | Code Formatter                          |
+| Commitlint  | Commit message linter                   |
+| Husky       | Git Hooks                               |
+| lint-staged | Lint staged files                       |
 
 ## Services
 
