@@ -1,0 +1,3 @@
+mutation DeleteWorkplace($id: ID!) {
+  deleteWorkplace(id: $id)
+}

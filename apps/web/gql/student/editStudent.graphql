@@ -1,0 +1,5 @@
+mutation EditStudent($id: ID!, $name: String!, $group_id: String!) {
+  editStudent(edit: { name: $name, group_id: $group_id }, id: $id) {
+    id
+  }
+}

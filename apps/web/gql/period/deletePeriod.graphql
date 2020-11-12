@@ -1,0 +1,3 @@
+mutation DeletePeriod($id: ID!) {
+  deletePeriod(id: $id)
+}

@@ -1,0 +1,7 @@
+query Supervisor($id: ID!) {
+  supervisor(id: $id) {
+    name
+    email
+    phone
+  }
+}

@@ -1,0 +1,15 @@
+mutation EditWorkplace(
+  $id: ID!
+  $name: String!
+  $description: String!
+  $email: String!
+  $phone: String!
+  $url: String!
+) {
+  editWorkplace(
+    edit: { name: $name, description: $description, email: $email, phone: $phone, url: $url }
+    id: $id
+  ) {
+    id
+  }
+}

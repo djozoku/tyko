@@ -1,0 +1,7 @@
+mutation AddSupervisor($name: String!, $email: String!, $phone: String!, $workplace_id: String!) {
+  addSupervisor(
+    supervisor: { name: $name, email: $email, phone: $phone, workplace_id: $workplace_id }
+  ) {
+    id
+  }
+}

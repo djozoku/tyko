@@ -1,0 +1,9 @@
+query Groups($skip: Int, $take: Int, $search: String) {
+  groups(skip: $skip, take: $take, search: $search) {
+    items {
+      id
+      name
+    }
+    total
+  }
+}

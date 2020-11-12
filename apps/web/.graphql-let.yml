@@ -1,0 +1,7 @@
+schema: ${NEXT_PUBLIC_API_SERVER}/graphql
+documents: 'gql/**/*.graphql'
+plugins:
+  - typescript
+  - typescript-operations
+  - typescript-react-apollo
+respectGitIgnore: true

@@ -1,0 +1,14 @@
+query Me {
+  me {
+    name
+    email
+    avatar
+    type
+    student {
+      id
+    }
+    teacher {
+      id
+    }
+  }
+}

@@ -1,0 +1,17 @@
+mutation AddWorkplace(
+  $name: String!
+  $description: String!
+  $email: String!
+  $phone: String!
+  $url: String!
+  $city: String!
+  $street: String!
+  $postal_code: String!
+) {
+  addWorkplace(
+    address: { city: $city, postal_code: $postal_code, street: $street }
+    workplace: { name: $name, description: $description, email: $email, phone: $phone, url: $url }
+  ) {
+    id
+  }
+}

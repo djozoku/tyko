@@ -1,0 +1,21 @@
+mutation EditPeriod(
+  $id: ID!
+  $start_date: DateTime!
+  $end_date: DateTime!
+  $teacher_id: String!
+  $supervisor_id: String!
+  $workplace_id: String!
+) {
+  editPeriod(
+    edit: {
+      start_date: $start_date
+      end_date: $end_date
+      teacher_id: $teacher_id
+      supervisor_id: $supervisor_id
+      workplace_id: $workplace_id
+    }
+    id: $id
+  ) {
+    id
+  }
+}

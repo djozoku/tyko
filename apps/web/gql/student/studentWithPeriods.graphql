@@ -1,0 +1,13 @@
+query StudentWithPeriods($id: ID!) {
+  student(id: $id) {
+    name
+    periods {
+      id
+      start_date
+      end_date
+      supervisor_id
+      teacher_id
+      workplace_id
+    }
+  }
+}

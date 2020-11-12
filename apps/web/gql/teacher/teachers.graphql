@@ -1,0 +1,9 @@
+query Teachers($skip: Int, $take: Int, $search: String) {
+  teachers(skip: $skip, take: $take, search: $search) {
+    items {
+      id
+      name
+    }
+    total
+  }
+}

@@ -1,0 +1,17 @@
+query MeStudentPeriods {
+  me {
+    uid
+    student {
+      id
+      periods {
+        id
+        start_date
+        end_date
+        workplace {
+          id
+          name
+        }
+      }
+    }
+  }
+}

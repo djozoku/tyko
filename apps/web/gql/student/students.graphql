@@ -1,0 +1,9 @@
+query Students($skip: Int, $take: Int, $search: String) {
+  students(skip: $skip, take: $take, search: $search, where: {}) {
+    items {
+      id
+      name
+    }
+    total
+  }
+}

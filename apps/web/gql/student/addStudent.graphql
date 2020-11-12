@@ -1,0 +1,5 @@
+mutation AddStudent($name: String!, $group: String!) {
+  addStudent(student: { name: $name, group_id: $group }) {
+    id
+  }
+}

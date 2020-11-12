@@ -1,0 +1,22 @@
+query Student($id: ID!) {
+  student(id: $id) {
+    name
+    group {
+      id
+      name
+    }
+    periods {
+      id
+      start_date
+      end_date
+      teacher {
+        id
+        name
+      }
+      workplace {
+        id
+        name
+      }
+    }
+  }
+}

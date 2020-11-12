@@ -1,0 +1,18 @@
+query PeriodsByTeacher($teacher_id: String!, $skip: Int, $take: Int) {
+  periods(skip: $skip, take: $take, where: { teacher_id: $teacher_id }) {
+    items {
+      id
+      start_date
+      end_date
+      workplace {
+        id
+        name
+      }
+      student {
+        id
+        name
+      }
+    }
+    total
+  }
+}

@@ -1,0 +1,8 @@
+query Teacher($id: ID!) {
+  teacher(id: $id) {
+    id
+    name
+    email
+    phone
+  }
+}

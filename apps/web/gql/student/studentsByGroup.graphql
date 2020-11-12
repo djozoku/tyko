@@ -1,0 +1,9 @@
+query StudentsByGroup($group_id: String!, $skip: Int, $take: Int, $search: String) {
+  students(skip: $skip, take: $take, search: $search, where: { group_id: $group_id }) {
+    items {
+      id
+      name
+    }
+    total
+  }
+}

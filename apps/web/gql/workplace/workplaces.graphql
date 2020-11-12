@@ -1,0 +1,9 @@
+query Workplaces($skip: Int, $take: Int, $search: String) {
+  workplaces(skip: $skip, take: $take, search: $search) {
+    items {
+      id
+      name
+    }
+    total
+  }
+}

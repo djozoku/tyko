@@ -1,0 +1,14 @@
+query StudentsByWorkplace($id: String!, $skip: Int, $take: Int) {
+  students(skip: $skip, take: $take, where: { workplace_id: $id }) {
+    items {
+      id
+      name
+      periods {
+        start_date
+        end_date
+        workplace_id
+      }
+    }
+    total
+  }
+}

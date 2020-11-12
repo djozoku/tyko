@@ -1,0 +1,3 @@
+mutation DeleteSupervisor($id: ID!) {
+  deleteSupervisor(id: $id)
+}

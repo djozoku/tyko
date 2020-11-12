@@ -1,0 +1,21 @@
+mutation AddPeriod(
+  $id: ID!
+  $start_date: DateTime!
+  $end_date: DateTime!
+  $supervisor_id: String!
+  $teacher_id: String!
+  $workplace_id: String!
+) {
+  addPeriod(
+    id: $id
+    period: {
+      start_date: $start_date
+      end_date: $end_date
+      supervisor_id: $supervisor_id
+      teacher_id: $teacher_id
+      workplace_id: $workplace_id
+    }
+  ) {
+    id
+  }
+}

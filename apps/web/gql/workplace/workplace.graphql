@@ -1,0 +1,22 @@
+query Workplace($id: ID!) {
+  workplace(id: $id) {
+    id
+    name
+    description
+    phone
+    email
+    url
+    address {
+      id
+      city
+      postal_code
+      street
+    }
+    supervisors {
+      id
+      name
+      phone
+      email
+    }
+  }
+}

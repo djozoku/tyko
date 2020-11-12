@@ -1,0 +1,5 @@
+mutation AddTeacher($name: String!, $email: String!, $phone: String!) {
+  addTeacher(teacher: { name: $name, email: $email, phone: $phone }) {
+    id
+  }
+}

@@ -1,0 +1,5 @@
+mutation EditSupervisor($id: ID!, $name: String!, $email: String!, $phone: String!) {
+  editSupervisor(edit: { name: $name, email: $email, phone: $phone }, id: $id) {
+    id
+  }
+}
