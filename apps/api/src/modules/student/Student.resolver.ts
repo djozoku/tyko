@@ -10,8 +10,10 @@ import {
   Args,
   Ctx,
   ObjectType,
+  InputType,
+  Field,
 } from 'type-graphql';
-import { createQueryBuilder, In } from 'typeorm';
+import { createQueryBuilder } from 'typeorm';
 import { UserInputError } from 'apollo-server-express';
 
 import Group from '../group/Group.entity';
@@ -23,6 +25,18 @@ import PaginatedResponse from '../../utils/PaginatedResponse';
 import Student from './Student.entity';
 import EditStudent from './EditStudent.input';
 import AddStudent from './AddStudent.input';
+
+@InputType()
+class StudentWhereArgs {
+  @Field({ nullable: true })
+  workplace_id?: string;
+
+  @Field({ nullable: true })
+  group_id?: string;
+
+  @Field({ nullable: true })
+  teacher_id?: string;
+}
 
 @ObjectType()
 class PaginatedStudentResponse extends PaginatedResponse(Student) {}
@@ -42,51 +56,36 @@ export default class StudentResolver {
   async students(
     @Args() { skip, take }: PaginationArgs,
     @Arg('search', () => String, { nullable: true }) search: string,
+    @Arg('where', () => StudentWhereArgs, { nullable: true }) where: StudentWhereArgs,
   ): Promise<PaginatedStudentResponse> {
+    const queryBuilder = createQueryBuilder(Student).select().where('1 = 1');
+    if (where.workplace_id || where.teacher_id) {
+      let periods: Period[] = [];
+      if (where.workplace_id) {
+        periods = await Period.find({ where: { workplace_id: where.workplace_id } });
+      } else if (where.teacher_id) {
+        periods = await Period.find({ where: { teacher_id: where.teacher_id } });
+      }
+      const now = Date.now();
+      const filtered = periods.filter((period) => period.end_date.getTime() > now);
+      if (filtered.length === 0) {
+        return {
+          items: [],
+          total: 0,
+          hasMore: false,
+        };
+      }
+      queryBuilder.andWhere('id IN (:...ids)', { ids: filtered.map((p) => p.student_id) });
+    }
+    if (where.group_id) {
+      queryBuilder.andWhere('group_id = :id', { id: parseInt(where.group_id, 10) });
+    }
     if (search) {
-      const [items, count] = await createQueryBuilder(Student)
-        .select()
-        .where('name_search_doc @@ to_tsquery(:query)', { query: `${search}:*` })
-        .orderBy('ts_rank(name_search_doc, to_tsquery(:query))', 'DESC')
-        .skip(skip)
-        .take(take)
-        .getManyAndCount();
-      return {
-        items,
-        total: count,
-        hasMore: count - skip - take > 0,
-      };
+      queryBuilder
+        .andWhere('name_search_doc @@ to_tsquery(:query)', { query: `${search}:*` })
+        .orderBy('ts_rank(name_search_doc, to_tsquery(:query))', 'DESC');
     }
-    const [items, count] = await Student.findAndCount({ skip, take });
-    return {
-      items,
-      total: count,
-      hasMore: count - skip - take > 0,
-    };
-  }
-
-  @Authorized()
-  @Query(() => PaginatedStudentResponse, {
-    description: 'Gets students with current or future workplace ID',
-  })
-  async studentsByWorkplace(
-    @Args() { skip, take }: PaginationArgs,
-    @Arg('id', () => ID, { description: 'Workplace ID to get students from' }) id: string,
-  ): Promise<PaginatedStudentResponse> {
-    const periods = await Period.find({ where: { workplace_id: id } });
-    const filtered = periods.filter((period) => period.end_date.getTime() > Date.now());
-    if (filtered.length === 0) {
-      return {
-        items: [],
-        total: 0,
-        hasMore: false,
-      };
-    }
-    const [items, count] = await Student.findAndCount({
-      skip,
-      take,
-      where: { id: In(filtered.map((p) => p.student_id)) },
-    });
+    const [items, count] = await queryBuilder.skip(skip).take(take).getManyAndCount();
     return {
       items,
       total: count,
