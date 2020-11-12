@@ -65,7 +65,7 @@ export const bootstrap = async (): Promise<void> => {
   });
 
   // apply apollo server to express
-  server.applyMiddleware({ app, cors: false });
+  server.applyMiddleware({ app, cors: false, path: '/api/graphql' });
 
   // page not found handler
   app.use((_req, _res, next) => {
