@@ -44,7 +44,7 @@ const bootstrap = async () => {
   app.use(morgan('dev'));
 
   // static public folder
-  app.use(express.static(path.join(__dirname, '..', 'public')));
+  app.use('/auth', express.static(path.join(__dirname, '..', 'public')));
 
   // body support
   app.use(express.json());
