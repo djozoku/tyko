@@ -184,5 +184,12 @@ export default class MicrosoftAuthProvider extends BaseAuthProvider {
         failureRedirect: '/auth/cancel',
       })(req, res, next);
     });
+
+    this.router.get('/logout', (req, res) => {
+      req.session?.destroy(() => {
+        req.logout();
+        res.json({ loggedOut: true });
+      });
+    });
   }
 }
