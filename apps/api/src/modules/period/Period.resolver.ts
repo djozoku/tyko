@@ -1,18 +1,80 @@
-import { Resolver, Mutation, Arg, ID, FieldResolver, Root, Authorized, Ctx } from 'type-graphql';
+import {
+  Resolver,
+  Mutation,
+  Arg,
+  ID,
+  FieldResolver,
+  Root,
+  Authorized,
+  Ctx,
+  Query,
+  ObjectType,
+  Args,
+  InputType,
+  Field,
+} from 'type-graphql';
 import { UserInputError } from 'apollo-server-express';
+import { createQueryBuilder } from 'typeorm';
 
 import Student from '../student/Student.entity';
 import Workplace from '../workplace/Workplace.entity';
 import Teacher from '../teacher/Teacher.entity';
 import Supervisor from '../supervisor/Supervisor.entity';
 import { Context } from '../../utils/GraphQLContext';
+import PaginatedResponse from '../../utils/PaginatedResponse';
+import PaginationArgs from '../../utils/PaginationArgs';
 
 import EditPeriod from './EditPeriod.input';
 import AddPeriod from './AddPeriod.input';
 import Period from './Period.entity';
 
+@ObjectType()
+class PaginatedPeriodResponse extends PaginatedResponse(Period) {}
+
+@InputType()
+class PeriodWhereArgs {
+  @Field({ nullable: true })
+  student_id?: string;
+
+  @Field({ nullable: true })
+  teacher_id?: string;
+
+  @Field({ nullable: true })
+  workplace_id?: string;
+}
+
 @Resolver(Period)
 export default class PeriodResolver {
+  @Authorized()
+  @Query(() => PaginatedPeriodResponse, { description: 'Gets list periods' })
+  async periods(
+    @Args() { skip, take }: PaginationArgs,
+    @Arg('where', () => PeriodWhereArgs, { nullable: true }) where: PeriodWhereArgs,
+  ): Promise<PaginatedPeriodResponse> {
+    const queryBuilder = createQueryBuilder(Period).select().where('1 = 1');
+    if (where.student_id) {
+      queryBuilder.andWhere('student_id = :student_id', {
+        student_id: parseInt(where.student_id, 10),
+      });
+    }
+    if (where.teacher_id) {
+      queryBuilder.andWhere('teacher_id = :teacher_id', {
+        teacher_id: parseInt(where.teacher_id, 10),
+      });
+    }
+    if (where.workplace_id) {
+      queryBuilder.andWhere('workplace_id = :workplace_id', {
+        workplace_id: parseInt(where.workplace_id, 10),
+      });
+    }
+    const [items, count] = await queryBuilder.skip(skip).take(take).getManyAndCount();
+    return {
+      items,
+      total: count,
+      hasMore: count - skip - take > 0,
+    };
+  }
+
   @Authorized('teacher', 'student')
   @Mutation(() => Period, { description: 'Adds a new period to the database' })
   async addPeriod(
