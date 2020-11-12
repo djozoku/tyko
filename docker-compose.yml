@@ -1,0 +1,93 @@
+version: '3.8'
+services:
+  frontend:
+    image: ozoku/tyko-frontend:1.0
+    container_name: tyko-frontend
+    labels:
+      traefik.enable: 'true'
+      traefik.http.routers.tyko-frontend.entrypoints: 'https'
+      traefik.http.routers.tyko-frontend.rule: 'Host(`${DOMAIN_NAME}`)'
+      traefik.http.routers.tyko-frontend.priority: 1
+      traefik.http.routers.tyko-frontend.tls: 'true'
+      traefik.http.routers.tyko-frontend.tls.certresolver: letsEncrypt
+      traefik.http.services.tyko-frontend.loadbalancer.server.port: 3000
+    environment:
+      NEXT_PUBLIC_API_SERVER: https://${DOMAIN_NAME}/api
+      NEXT_PUBLIC_AUTH_SERVER: https://${DOMAIN_NAME}
+      TOKEN_SECRET: $TOKEN_SECRET
+    networks:
+      - web
+    restart: on-failure
+  api:
+    image: ozoku/tyko-api:1.0
+    container_name: tyko-api
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: web
+      traefik.http.routers.tyko-api.entrypoints: 'https'
+      traefik.http.routers.tyko-api.rule: 'Host(`${DOMAIN_NAME}`) && Path(`/api/graphql`)'
+      traefik.http.routers.tyko-api.priority: 2
+      traefik.http.routers.tyko-api.tls: 'true'
+      traefik.http.routers.tyko-api.tls.certresolver: letsEncrypt
+      traefik.http.services.tyko-api.loadbalancer.server.port: 5000
+    environment:
+      HOST_ADDRESS: https://${DOMAIN_NAME}
+      AUTH_SERVER: https://${DOMAIN_NAME}
+      JWT_SECRET: $JWT_SECRET
+    networks:
+      - web
+      - tyko
+  auth:
+    image: ozoku/tyko-auth:1.0
+    container_name: tyko-auth
+    labels:
+      traefik.enable: 'true'
+      traefik.docker.network: web
+      traefik.http.routers.tyko-auth.entrypoints: 'https'
+      traefik.http.routers.tyko-auth.rule: 'Host(`${DOMAIN_NAME}`) && PathPrefix(`/auth`)'
+      traefik.http.routers.tyko-auth.priority: 2
+      traefik.http.routers.tyko-auth.tls: 'true'
+      traefik.http.routers.tyko-auth.tls.certresolver: letsEncrypt
+      traefik.http.services.tyko-auth.loadbalancer.server.port: 4000
+    environment:
+      HOST_ADDRESS: https://${DOMAIN_NAME}
+      FRONTEND_URL: https://${DOMAIN_NAME}
+      SESSION_SECRET: $SESSION_SECRET
+      JWT_SECRET: $JWT_SECRET
+      TEACHER_EMAIL_DOMAIN: $TEACHER_EMAIL_DOMAIN
+      STUDENT_EMAIL_DOMAIN: $STUDENT_EMAIL_DOMAIN
+      MICROSOFT_AUTH_ENABLE: $MICROSOFT_AUTH_ENABLE
+      MICROSOFT_APP_ID: $MICROSOFT_APP_ID
+      MICROSOFT_APP_SECRET: $MICROSOFT_APP_SECRET
+      MICROSOFT_AUTHORITY: $MICROSOFT_AUTHORITY
+      MICROSOFT_DOMAIN_HINT: $MICROSOFT_DOMAIN_HINT
+      DISCORD_AUTH_ENABLE: $DISCORD_AUTH_ENABLE
+      DISCORD_APP_ID: $DISCORD_APP_ID
+      DISCORD_APP_SECRET: $DISCORD_APP_SECRET
+      REDIS_HOST: tyko-redis
+    networks:
+      - web
+      - tyko
+  postgres:
+    container_name: tyko-postgres
+    image: postgres:12-alpine
+    environment:
+      POSTGRES_PASSWORD: $DB_PASSWORD
+      POSTGRES_USER: $DB_USER
+      POSTGRES_DB: $DB_NAME
+    networks:
+      - tyko
+    volumes:
+      - postgres:/var/lib/postgresql/data
+  redis:
+    container_name: tyko-redis
+    image: redis:6-alpine
+    networks:
+      - tyko
+
+networks:
+  web:
+    external: true
+  tyko:
+volumes:
+  postgres:
