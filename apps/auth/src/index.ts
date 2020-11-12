@@ -13,7 +13,6 @@ import flash from 'connect-flash';
 import hbs from 'hbs';
 import redis from 'redis';
 import connectRedis from 'connect-redis';
-import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 
 import Account from './entities/Account.entity';
@@ -49,9 +48,6 @@ const bootstrap = async () => {
   // body support
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
-
-  // cookie parsing
-  app.use(cookieParser(process.env.SESSION_SECRET));
 
   // initialize session
   let store;

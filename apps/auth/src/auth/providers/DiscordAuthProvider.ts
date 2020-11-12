@@ -1,3 +1,4 @@
+import cookieParser from 'cookie-parser';
 import { Request } from 'express';
 import fetch from 'node-fetch';
 import { AuthorizationCode, Token } from 'simple-oauth2';
@@ -36,6 +37,8 @@ export default class DiscordAuthProvider extends BaseAuthProvider {
   }
 
   protected registerRoutes(): void {
+    this.router.use(cookieParser(process.env.SESSION_SECRET));
+
     this.router.get('/login', (_req, res) => {
       const state = this.genState();
       const url =
