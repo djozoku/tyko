@@ -134,6 +134,9 @@ export default class WorkplaceResolver {
     const address = await Address.findOneOrFail(workplace.address_id);
     await address.remove();
 
+    const supervisors = await Supervisor.find({ where: { workplace_id: parseInt(id, 10) } });
+    await Supervisor.remove(supervisors);
+
     await workplace.remove();
     return true;
   }
