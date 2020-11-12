@@ -1,6 +1,4 @@
 import {
-  Container,
-  Toolbar,
   Grid,
   Typography,
   List,
@@ -12,7 +10,7 @@ import {
   CardContent,
   Theme,
   IconButton,
-  useMediaQuery,
+  //  useMediaQuery,
 } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import React from 'react';
@@ -55,7 +53,7 @@ const AccountList = () => {
 };
 
 const Account = () => {
-  const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('xs'));
+  //const isMobile = useMediaQuery((theme: Theme) => theme.breakpoints.down('xs'));
   const classes = useStyles();
   const { user } = useLogin();
   useGuard();
