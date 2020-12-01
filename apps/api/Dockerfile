@@ -18,7 +18,7 @@ COPY ./apps/api/tsconfig.json .
 
 RUN yarn build
 
-COPY ./apps/auth/ormconfig.json .
+COPY ./apps/api/ormconfig.json .
 
 EXPOSE 4000
 
