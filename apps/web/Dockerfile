@@ -1,16 +1,5 @@
 FROM ozoku/tyko-base:1.0
 
-WORKDIR /workspace
-
-COPY package.json yarn.lock ./
-COPY apps/api/package.json ./apps/api/
-COPY apps/auth/package.json ./apps/auth/
-COPY apps/web/package.json ./apps/web/
-
-RUN yarn install --frozen-lockfile
-
-COPY tsconfig.base.json .
-
 WORKDIR /workspace/apps/web
 
 COPY ./apps/web/components ./components
